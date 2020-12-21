@@ -1,0 +1,33 @@
+:root{
+    --game-background: #0BDEB4;
+    --game-table-border:#AAF5C6
+}
+
+html, body{
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;    
+    flex-direction: column;
+}
+
+table{
+    border: 15px solid var(--game-table-border);
+    background-color: white;
+    border-radius: 15px;
+    margin: 0px 15px;
+    margin-bottom: 15px;
+}
+
+.game-background{
+    background-color: var( --game-background)
+}
+
+.points-label{
+    margin: 0;
+    margin-bottom: 5px;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+}
