@@ -16,20 +16,15 @@ const player = {
     points: 0,
     automaticMovimention: {
         direction: Directions.UP,
-        enabled: true,
-        playerMovementInterval: ""
     }
-
 }
 
-const coin = {
+const squareResults = {
     ...squareStyle,
     backgroundColor: '#82FA9E',
-    position: {
-        row: 0,
-        column: 0
-    },
-    needUpdate: true
+    positions: [],
+    needUpdate: true,
+    totalItens: 4
 };
 
 const scenarioLimits = {
@@ -37,7 +32,11 @@ const scenarioLimits = {
     maxColumn: 0
 };
 
-
+const game = {
+    isPlaying: true,
+    centerRow: 0,
+    centerColumn: 0
+}
 const getDivPoints = document.querySelector(divPoints.attrValue);
 
 const adjustWidthSize = window.innerWidth - ((gameBorder + gameMargin) * 2) + 10;
@@ -45,16 +44,15 @@ const adjustHeightSize = window.innerHeight - (gameMargin + divPoints.margin + g
 
 const scenarioRows = Math.floor(adjustHeightSize / squareStyle.height);
 const scenarioColumns = Math.floor(adjustWidthSize / squareStyle.width);
-console.log(adjustHeightSize / squareStyle.height);
 
 document.body.onload = function () {
     startGame();
 }
 
 document.onkeydown = function (event) {
-    player.automaticMovimention.enabled = false;
-    playerMovementInterval()
-    playerMovement(event.key)
+    if (game.isPlaying) {
+        player.automaticMovimention.direction = event.key;
+    }
 }
 
 const startGame = () => {
@@ -76,6 +74,9 @@ const createScenario = () => {
 
     centerRow = Math.floor(rows / 2) + 1;
     centerColumn = Math.floor(columns / 2) + 1;
+
+    game.centerColumn = centerColumn;
+    game.centerRow = centerRow;
 
     for (let row = 1; row <= rows; row++) {
         const newRow = document.createElement("tr");
@@ -119,6 +120,7 @@ const playerMovement = (keyPress) => {
         case 'w': {
             player.automaticMovimention.direction = Directions.UP;
             if (player.position.row <= 1) {
+                endGame();
                 update = false;
             }
             else {
@@ -131,6 +133,7 @@ const playerMovement = (keyPress) => {
         case 's': {
             player.automaticMovimention.direction = Directions.DOWN;
             if (player.position.row >= scenarioLimits.maxRow) {
+                endGame();
                 update = false;
             }
             else {
@@ -143,6 +146,7 @@ const playerMovement = (keyPress) => {
         case 'a': {
             player.automaticMovimention.direction = Directions.LEFT;
             if (player.position.column <= 1) {
+                endGame();
                 update = false;
             }
             else {
@@ -155,6 +159,7 @@ const playerMovement = (keyPress) => {
         case 'd': {
             player.automaticMovimention.direction = Directions.RIGHT;
             if (player.position.column >= scenarioLimits.maxColumn) {
+                endGame();
                 update = false;
             }
             else {
@@ -166,14 +171,18 @@ const playerMovement = (keyPress) => {
     }
 
     if (update) {
-        const playerActualPosition = getGameItemAttributeValue(player.position.row, player.position.column);
+        if (squareResults.positions && squareResults.positions.length > 0) {
+            const samePlayerPosition = squareResults.positions.some((position) => newRow == position.row && newColumn == position.column);
 
-        if (newRow == coin.position.row && newColumn == coin.position.column) {
-            new Sound("./sounds/coin-sound.mp3").play();
-            coin.needUpdate = true;
-            player.points = player.points + 10;
-            document.querySelector("[points-label]").innerHTML = player.points;
+            if (samePlayerPosition) {
+                new Sound("./sounds/coin-sound.mp3").play();
+                squareResults.needUpdate = true;
+                player.points = player.points + 10;
+                document.querySelector("[points-label]").innerHTML = player.points;
+            }
         }
+
+        const playerActualPosition = getGameItemAttributeValue(player.position.row, player.position.column);
 
         const getItemOfPlayerPos = getGameItem(playerActualPosition);
 
@@ -194,53 +203,66 @@ const playerMovement = (keyPress) => {
 
 const engine = () => {
     setInterval(function () {
-        renderCoin();
-        automaticPlayerMove();
+        if (game.isPlaying) {
+            renderSquareResults();
+            automaticPlayerMove();
+        }
     }, frames);
 }
 
-const playerMovementInterval = function () {
-    player.automaticMovimention.playerMovementInterval = setInterval(function () {
-        player.automaticMovimention.enabled = true;
-    }, frames * 2);
 
-    player.automaticMovimention.playerMovementInterval;
-}
-
-const renderCoin = () => {
-    if (coin.needUpdate) {
+const renderSquareResults = () => {
+    if (squareResults.needUpdate) {
         const minRow = 1;
         const maxRow = scenarioRows;
         const minColumn = 1;
         const maxColumn = scenarioColumns;
-        let samePlayerPosition = false;
+        let samePlayerPosition = false, haveAnItemInThisPosition = false;
         let randomRow = 0, randomColumn = 0;
 
-        do {
-            randomRow = generateRandomNumber(minRow, maxRow);
-            randomColumn = generateRandomNumber(minColumn, maxColumn);
+        clearAllSquareResults();
 
-            if (randomRow == player.position.row && randomColumn == player.position.column) {
-                samePlayerPosition = true;
-            }
-            else {
-                samePlayerPosition = false;
-            }
-        } while (samePlayerPosition);
 
-        const coinAttr = getGameItemAttributeValue(randomRow, randomColumn);
 
-        const getCoinNewPosition = getGameItem(`${coinAttr}`);
+        squareResults.positions = new Array();
 
-        coin.position = {
-            column: randomColumn,
-            row: randomRow
+        for (let position = 0; position < squareResults.totalItens; position++) {
+            do {
+                randomRow = generateRandomNumber(minRow, maxRow);
+                randomColumn = generateRandomNumber(minColumn, maxColumn);
+
+                haveAnItemInThisPosition = false;
+
+                haveAnItemInThisPosition = squareResults.positions.some((item) => item.row == randomRow && item.column == randomColumn);
+
+                samePlayerPosition = randomRow == player.position.row && randomColumn == player.position.column;
+            } while (samePlayerPosition || haveAnItemInThisPosition);
+
+            const resultsSquareAttr = getGameItemAttributeValue(randomRow, randomColumn);
+
+            const getSquareResultsNewPosition = getGameItem(`${resultsSquareAttr}`);
+
+            squareResults.positions.push({
+                column: randomColumn,
+                row: randomRow
+            });
+
+            squareResults.needUpdate = false;
+
+            getSquareResultsNewPosition.style.backgroundColor = squareResults.backgroundColor;
         }
-
-        coin.needUpdate = false;
-
-        getCoinNewPosition.style.backgroundColor = coin.backgroundColor;
     }
+}
+
+
+const clearAllSquareResults = () => {
+    squareResults.positions.forEach((position) => {
+        const resultsSquareAttr = getGameItemAttributeValue(position.row, position.column);
+
+        const getSquareResultsNewPosition = getGameItem(`${resultsSquareAttr}`);
+
+        getSquareResultsNewPosition.style.backgroundColor = "white";
+    })
 }
 
 const getGameItem = (attrValue) => document.querySelector(`[position="${attrValue}"]`);
@@ -250,7 +272,11 @@ const getGameItemAttributeValue = (row, column) => `${row}-${column}`;
 const automaticPlayerMove = () => {
     const automaticMovimention = player.automaticMovimention;
 
-    if (automaticMovimention.enabled) {
-        playerMovement(automaticMovimention.direction);
-    }
+    playerMovement(automaticMovimention.direction);
+}
+
+const endGame = () => {
+    game.isPlaying = false;
+
+    //alert("Fim de jogo")
 }
