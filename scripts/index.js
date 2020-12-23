@@ -40,7 +40,7 @@ const game = {
 const getDivPoints = document.querySelector(divPoints.attrValue);
 
 const adjustWidthSize = window.innerWidth - ((gameBorder + gameMargin) * 2) + 10;
-const adjustHeightSize = window.innerHeight - (gameMargin + divPoints.margin + getDivPoints.offsetHeight);
+const adjustHeightSize = window.innerHeight - (gameMargin + getDivPoints.offsetHeight);
 
 const scenarioRows = Math.floor(adjustHeightSize / squareStyle.height);
 const scenarioColumns = Math.floor(adjustWidthSize / squareStyle.width);
@@ -101,6 +101,9 @@ const createScenario = () => {
 
             newColumnStyle.width = `${squareStyle.width}px`;
             newColumnStyle.height = `${squareStyle.height}px`;
+
+            newColumnStyle.maxWidth = `${squareStyle.width}px`;
+            newColumnStyle.maxHeight = `${squareStyle.height}px`;
             newColumnStyle.border = squareStyle.border;
 
             newRow.appendChild(newColumn);
@@ -232,7 +235,7 @@ const renderSquareResults = () => {
         const maxRow = scenarioRows;
         const minColumn = 1;
         const maxColumn = scenarioColumns;
-        let samePlayerPosition = false, haveAnItemInThisPosition = false;
+        let haveAnItemInThisPosition = false, isCloseToThePlayer = false;
         let randomRow = 0, randomColumn = 0;
 
         clearAllSquareResults();
@@ -245,6 +248,8 @@ const renderSquareResults = () => {
 
         expressionToResolve.innerHTML = `${expression} = ?`;
 
+        const positionsClose = positionsCloseToThePlayer();
+
         for (let position = 0; position < qtItens; position++) {
             do {
                 randomRow = generateRandomNumber(minRow, maxRow);
@@ -254,8 +259,10 @@ const renderSquareResults = () => {
 
                 haveAnItemInThisPosition = squareResults.positions.some((item) => item.row == randomRow && item.column == randomColumn);
 
-                samePlayerPosition = randomRow == player.position.row && randomColumn == player.position.column;
-            } while (samePlayerPosition || haveAnItemInThisPosition);
+                const attrPosition = getGameItemAttributeValue(randomRow, randomColumn);
+
+                isCloseToThePlayer = positionsClose.includes(attrPosition);
+            } while (haveAnItemInThisPosition || isCloseToThePlayer);
 
             const resultsSquareAttr = getGameItemAttributeValue(randomRow, randomColumn);
 
@@ -281,7 +288,7 @@ const clearAllSquareResults = () => {
     squareResults.positions.forEach((position) => {
         const resultsSquareAttr = getGameItemAttributeValue(position.row, position.column);
 
-        const getSquareResultsNewPosition = getGameItem(`${resultsSquareAttr}`);
+        const getSquareResultsNewPosition = getGameItem(resultsSquareAttr);
 
         getSquareResultsNewPosition.style.backgroundColor = "white";
         getSquareResultsNewPosition.innerHTML = "";
@@ -298,8 +305,52 @@ const automaticPlayerMove = () => {
     playerMovement(automaticMovimention.direction);
 }
 
+const positionsCloseToThePlayer = () => {
+    const playerRow = player.position.row, playerColumn = player.position.column;
+    const positionsClose = [];
+
+    let startRow, startColumn, endRow, endColumn;
+
+    startRow = playerRow - 2;
+
+    if (startRow <= 0) {
+        startRow = 1;
+    }
+
+    endRow = playerRow + 2;
+
+    if (endRow >= scenarioLimits.maxRow) {
+        endRow = scenarioLimits.maxRow;
+    }
+
+    startColumn = playerColumn - 2;
+
+    if (startColumn <= 0) {
+        startColumn = 1;
+    }
+
+    endColumn = playerColumn + 2;
+
+    if (endColumn >= scenarioLimits.maxColumn) {
+        endColumn = scenarioLimits.maxColumn;
+    }
+
+    for (let row = startRow; row <= endRow; row++) {
+        for (let column = startColumn; column <= endColumn; column++) {
+            const closePosition = getGameItemAttributeValue(row, column);
+            positionsClose.push(closePosition);
+        }
+    }
+
+    return positionsClose;
+}
+
 const endGame = () => {
     game.isPlaying = false;
+    const playerPosition = getGameItemAttributeValue(player.position.row, player.position.column);
 
+    const playerDiv = getGameItem(playerPosition);
+
+    playerDiv.style.backgroundColor = player.backgroundColor;
     //alert("Fim de jogo")
 }
