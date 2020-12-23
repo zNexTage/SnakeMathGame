@@ -34,21 +34,27 @@ class Expressions {
         }
 
         let createdExpression = "";
+        let expressionResult;
 
-        for (let i = 1; i <= qtNumbersInExpression; i++) {
-            const number = generateRandomNumber(1, maxNumber);
+        do {
+            expressionResult = "", createdExpression = "";
 
-            const expression = this.getRandomExpression();
+            for (let i = 1; i <= qtNumbersInExpression; i++) {
+                const number = generateRandomNumber(1, maxNumber);
 
-            if (i < qtNumbersInExpression) {
-                createdExpression += `${number}${expression}`;
+                const expression = this.getRandomExpression();
+
+                if (i < qtNumbersInExpression) {
+                    createdExpression += `${number}${expression}`;
+                }
+                else {
+                    createdExpression += `${number}`;
+                }
             }
-            else {
-                createdExpression += `${number}`;
-            }
-        }
 
-        const expressionResult = parseFloat(math.evaluate(createdExpression)).toFixed(2);
+            expressionResult = math.evaluate(createdExpression);
+        } while (!Number.isInteger(expressionResult));
+
 
         possibilites.push({
             value: expressionResult,
@@ -58,16 +64,19 @@ class Expressions {
         let qtToGenerate = qtItens - 1;
 
         for (let i = 0; i < qtToGenerate; i++) {
+            let randomExpression = generateRandomNumber(0, 49);
+
+            let randomNumber = expressionResult * randomExpression;
             let number;
 
-            if (expressionResult < 0) {
-                number = generateRandomNumber(-maxNumber, 0);
+            if (randomNumber < 0) {
+                number = generateRandomNumber(randomNumber, 0);
             }
             else {
-                number = generateRandomNumber(0, maxNumber);
+                number = generateRandomNumber(0, randomNumber);
             }
 
-            number = parseFloat(number).toFixed(2);
+            number = parseInt(number);
 
             possibilites.push({
                 value: number,
