@@ -24,7 +24,6 @@ const squareResults = {
     backgroundColor: '#82FA9E',
     positions: [],
     needUpdate: true,
-    totalItens: 4
 };
 
 const scenarioLimits = {
@@ -37,6 +36,7 @@ const game = {
     centerRow: 0,
     centerColumn: 0
 }
+
 const getDivPoints = document.querySelector(divPoints.attrValue);
 
 const adjustWidthSize = window.innerWidth - ((gameBorder + gameMargin) * 2) + 10;
@@ -172,12 +172,27 @@ const playerMovement = (keyPress) => {
 
     if (update) {
         if (squareResults.positions && squareResults.positions.length > 0) {
-            const samePlayerPosition = squareResults.positions.some((position) => newRow == position.row && newColumn == position.column);
+            const playerPosition = squareResults.positions.find((position) => newRow == position.row && newColumn == position.column);
 
-            if (samePlayerPosition) {
-                new Sound("./sounds/coin-sound.mp3").play();
+            if (playerPosition) {
+                let playerResults = {};
+
+                if (playerPosition.containCorrectAnswer) {
+                    playerResults = {
+                        sound: "./Sounds/coin-sound.mp3",
+                        points: player.points + 10
+                    }
+                }
+                else {
+                    playerResults = {
+                        sound: "./Sounds/wrong_answer.mp3",
+                        points: player.points - 5
+                    }
+                }
+
+                player.points = playerResults.points;
                 squareResults.needUpdate = true;
-                player.points = player.points + 10;
+                new Sound(playerResults.sound).play();
                 document.querySelector("[points-label]").innerHTML = player.points;
             }
         }
@@ -222,11 +237,15 @@ const renderSquareResults = () => {
 
         clearAllSquareResults();
 
-
-
         squareResults.positions = new Array();
 
-        for (let position = 0; position < squareResults.totalItens; position++) {
+        const { expression, qtItens, possibilites } = new Expressions().createExpression(Difficulties.EASY);
+
+        const expressionToResolve = document.querySelector("[expression-to-resolve]");
+
+        expressionToResolve.innerHTML = `${expression} = ?`;
+
+        for (let position = 0; position < qtItens; position++) {
             do {
                 randomRow = generateRandomNumber(minRow, maxRow);
                 randomColumn = generateRandomNumber(minColumn, maxColumn);
@@ -244,12 +263,15 @@ const renderSquareResults = () => {
 
             squareResults.positions.push({
                 column: randomColumn,
-                row: randomRow
+                row: randomRow,
+                containCorrectAnswer: possibilites[position].isCorrectAnswer
             });
 
             squareResults.needUpdate = false;
 
             getSquareResultsNewPosition.style.backgroundColor = squareResults.backgroundColor;
+            getSquareResultsNewPosition.style.border = squareStyle.border;;
+            getSquareResultsNewPosition.innerHTML = `<label style="color:green;">${possibilites[position].value}</label>`
         }
     }
 }
@@ -262,6 +284,7 @@ const clearAllSquareResults = () => {
         const getSquareResultsNewPosition = getGameItem(`${resultsSquareAttr}`);
 
         getSquareResultsNewPosition.style.backgroundColor = "white";
+        getSquareResultsNewPosition.innerHTML = "";
     })
 }
 
