@@ -5,22 +5,26 @@
         Jogo
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="css/index.css" />
+    <link rel="stylesheet" href="Css/Index.css" />
 </head>
 
 <body class="game-background">
-    <div style="margin: 10px;" div-points>
+    <div class="div-points" div-points>
         <h2 class="points-label">Pontos: <label points-label>0</label></h2>
+        <h2 class="points-label"><label>&nbsp;|&nbsp;</label></h2>
+        <h2 class="points-label"><label expression-to-resolve>0</label></h2>
     </div>
     <div>
         <table cellspacing="0" style="width: 90%;margin: auto" game-scenario>
         </table>
     </div>
-    <script src="./scripts/Class/Expressions.js"></script>
-    <script src="./scripts/Class/Directions.js"></script>
-    <script src="./scripts/sound.js"></script>
-    <script src="./scripts/util.js"></script>
-    <script src="./scripts/index.js"></script>
+    <script src="./Modules/mathjs.js"></script>
+    <script src="./Scripts/Class/Difficulties.js"></script>
+    <script src="./Scripts/Class/Expressions.js"></script>
+    <script src="./Scripts/Class/Directions.js"></script>
+    <script src="./Scripts/Sound.js"></script>
+    <script src="./Scripts/Util.js"></script>
+    <script src="./Scripts/Index.js"></script>
 </body>
 
 </html>
