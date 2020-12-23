@@ -40,8 +40,12 @@ table{
 }
 
 .div-points{
-    margin: 10px;
+    height: 40px;
     flex-direction: row;
     display: flex;
-    justify-content: center
+    justify-content: center;
+    align-items: center;
+    background-color: #D90F16;
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
 }
