@@ -23,7 +23,7 @@ const squareResults = {
     ...squareStyle,
     backgroundColor: '#82FA9E',
     positions: [],
-    needUpdate: true,
+    needUpdate: false,
 };
 
 const scenarioLimits = {
@@ -32,7 +32,7 @@ const scenarioLimits = {
 };
 
 const game = {
-    isPlaying: true,
+    isPlaying: false,
     centerRow: 0,
     centerColumn: 0
 }
