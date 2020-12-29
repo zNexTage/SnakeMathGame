@@ -46,7 +46,8 @@ const scenarioRows = Math.floor(adjustHeightSize / squareStyle.height);
 const scenarioColumns = Math.floor(adjustWidthSize / squareStyle.width);
 
 document.body.onload = function () {
-    createScenario();
+    createScenario();    
+    engine();
 }
 
 document.onkeydown = function (event) {
@@ -57,8 +58,9 @@ document.onkeydown = function (event) {
 
 const startGame = () => {
     game.isPlaying = true;
+    squareResults.needUpdate = true;
+    player.automaticMovimention.direction = Directions.UP;
     dismissModal();
-    engine();
 }
 
 const endGame = () => {
@@ -71,13 +73,22 @@ const endGame = () => {
 
     clearAllSquareResults();
 
+    const getPlayerPositionAttr = getGameItemAttributeValue(player.position.row, player.position.column);
+
+    const getPlayerPosition = getGameItem(getPlayerPositionAttr);
+
+    getPlayerPosition.style.backgroundColor = 'white';
+
     player.position = {
         row: game.centerRow,
         column: game.centerColumn
     };
 
+    player.points = 0;
+
+    document.querySelector("[points-label]").innerHTML = player.points;
+
     showModal();
-    createScenario();
 }
 
 const createScenario = () => {
