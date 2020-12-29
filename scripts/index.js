@@ -46,7 +46,7 @@ const scenarioRows = Math.floor(adjustHeightSize / squareStyle.height);
 const scenarioColumns = Math.floor(adjustWidthSize / squareStyle.width);
 
 document.body.onload = function () {
-    startGame();
+    createScenario();
 }
 
 document.onkeydown = function (event) {
@@ -56,8 +56,28 @@ document.onkeydown = function (event) {
 }
 
 const startGame = () => {
-    createScenario();
+    game.isPlaying = true;
+    dismissModal();
     engine();
+}
+
+const endGame = () => {
+    game.isPlaying = false;
+    const playerPosition = getGameItemAttributeValue(player.position.row, player.position.column);
+
+    const playerDiv = getGameItem(playerPosition);
+
+    playerDiv.style.backgroundColor = player.backgroundColor;
+
+    clearAllSquareResults();
+
+    player.position = {
+        row: game.centerRow,
+        column: game.centerColumn
+    };
+
+    showModal();
+    createScenario();
 }
 
 const createScenario = () => {
@@ -343,14 +363,4 @@ const positionsCloseToThePlayer = () => {
     }
 
     return positionsClose;
-}
-
-const endGame = () => {
-    game.isPlaying = false;
-    const playerPosition = getGameItemAttributeValue(player.position.row, player.position.column);
-
-    const playerDiv = getGameItem(playerPosition);
-
-    playerDiv.style.backgroundColor = player.backgroundColor;
-    //alert("Fim de jogo")
 }

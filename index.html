@@ -6,6 +6,7 @@
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="Css/Index.css" />
+    <link rel="stylesheet" href="Css/Modal.css" />
 </head>
 
 <body class="game-background">
@@ -18,7 +19,18 @@
         <table cellspacing="0" style="width: 90%;margin: auto" game-scenario>
         </table>
     </div>
+    <div class="modal-background" modal>
+        <div class="modal-body">
+            <div class="modal-header">
+                <h1>SnakeMath Game</h1>
+            </div>
+            <div class="modal-content">
+                <button class="modal-btn modal-btn-start" onclick="startGame();" btn-start-game>Iniciar</button>
+            </div>
+        </div>
+    </div>
     <script src="./Modules/mathjs.js"></script>
+    <script src="./Scripts/Modal.js"></script>
     <script src="./Scripts/Class/Difficulties.js"></script>
     <script src="./Scripts/Class/Expressions.js"></script>
     <script src="./Scripts/Class/Directions.js"></script>
