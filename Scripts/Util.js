@@ -3,7 +3,7 @@ const isEven = (number) => number % 2 == 0;
 const gameBorder = 15;
 const gameMargin = 15;
 
-const frames = 150;
+const frames = 200;
 
 const divPoints = {
     attrValue: "[div-points]",

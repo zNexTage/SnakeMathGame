@@ -15,7 +15,7 @@ const player = {
     },
     points: 0,
     automaticMovimention: {
-        direction: Directions.UP,
+        direction: Directions.RIGHT,
     }
 }
 
@@ -58,8 +58,8 @@ document.onkeydown = function (event) {
 
 const startGame = () => {
     game.isPlaying = true;
+    player.automaticMovimention.direction = Directions.RIGHT;
     squareResults.needUpdate = true;
-    player.automaticMovimention.direction = Directions.UP;
     dismissModal();
 }
 
